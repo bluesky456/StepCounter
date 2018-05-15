@@ -37,6 +37,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.hardware.SensorManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -48,7 +49,6 @@ import android.os.Messenger;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.RemoteException;
-import android.support.v4.app.NotificationCompat;
 import android.util.ArrayMap;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -215,24 +215,31 @@ public class StepCounterService extends Service {
 			Intent btnIntent = new Intent(Constant.ACTION_DISABLE_STEP_COUNTER);
 			PendingIntent btnPendingIntent = PendingIntent.getService(getApplicationContext(), 0, btnIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.btn_notification_stop, btnPendingIntent);
-			
+
 			// 通知消息Intent定义
 			Intent intent = new Intent(Constant.ACTION_SHOW_STEP_COUNTER);
 			intent.addCategory(Intent.CATEGORY_DEFAULT);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent,
 					PendingIntent.FLAG_UPDATE_CURRENT);
-			
+
 			Notification.Builder builder = new Builder(getApplicationContext())
 					.setShowWhen(false)
 					.setSmallIcon(R.mipmap.ic_launcher)
-					.setFlag(Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT, true)
+					.setAutoCancel(true)
+					.setOngoing(true)
 					.setPriority(Notification.PRIORITY_DEFAULT)
 					.setCategory(Notification.CATEGORY_MESSAGE)
 					.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
-					.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-					.setContentIntent(pendingIntent)
-					.setCustomBigContentView(remoteViews);
+					.setVisibility(Notification.VISIBILITY_PUBLIC)
+					.setContentIntent(pendingIntent);
+
+			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
+				builder.setContent(remoteViews);
+			} else {
+				builder.setCustomContentView(remoteViews);
+			}
+
 			notificationManager.notify(Constant.NOTIFICATION_STEP_COUNTER_ENABLED, builder.build());
 		}
 	}

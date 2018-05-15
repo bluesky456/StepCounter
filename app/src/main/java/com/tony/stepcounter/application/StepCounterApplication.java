@@ -1,11 +1,11 @@
 package com.tony.stepcounter.application;
 
 import com.tony.stepcounter.base.BaseApplication;
+import com.tony.stepcounter.utils.PropertyUtil;
 import com.tony.stepcounter.utils.StepLogUtil;
 
 import android.app.KeyguardManager;
 import android.content.Context;
-import android.os.SystemProperties;
 
 public class StepCounterApplication extends BaseApplication {
 	
@@ -33,7 +33,7 @@ public class StepCounterApplication extends BaseApplication {
 	 * @return 调试开关是否打开
 	 */
 	public static boolean isDebugMode() {
-		String debug = SystemProperties.get("ovvi.stepcounter.debug", "1");
+		String debug = PropertyUtil.getProperty("tony.stepcounter.debug", "1");
 		return (1 == Integer.parseInt(debug));
 	}
 	
